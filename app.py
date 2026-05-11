@@ -23,9 +23,39 @@ def generate():
         data = request.get_json()
         job_title = data.get("job_title", "").strip()
 
+        # Validation
         if not job_title:
-            return jsonify({"error": "Job title is required"}), 400
+            return jsonify({
+                "error": "Job title is required"
+            }), 400
 
+        # Minimum length
+        if len(job_title) < 4:
+            return jsonify({
+                "error": "Please enter a valid job title"
+            }), 400
+
+        # Must contain letters
+        if not any(char.isalpha() for char in job_title):
+            return jsonify({
+                "error": "Please enter a valid job title"
+            }), 400
+
+        # Common valid job keywords
+        valid_keywords = [
+            "engineer", "developer", "designer", "manager",
+            "accountant", "doctor", "nurse", "teacher",
+            "analyst", "administrator", "architect",
+            "consultant", "officer", "specialist",
+            "technician", "scientist", "programmer"
+        ]
+
+        if not any(keyword in job_title.lower() for keyword in valid_keywords):
+            return jsonify({
+                "error": "Please enter a recognizable job title"
+            }), 400
+
+        # AI prompt
         prompt = f"""
         You are a senior HR interviewer at a top tech company.
         Generate exactly 5 interview questions for a {job_title} role.
@@ -40,7 +70,7 @@ def generate():
 
         response = None
 
-        # retry logic (important fix)
+        # Retry logic
         for i in range(3):
             try:
                 response = client.models.generate_content(
@@ -48,6 +78,7 @@ def generate():
                     contents=prompt
                 )
                 break
+
             except Exception as e:
                 print(f"Retrying... attempt {i+1}")
                 time.sleep(2)
@@ -57,18 +88,21 @@ def generate():
                 "error": "AI service is busy. Please try again."
             }), 503
 
-        questions = response.text if response and response.text else "No response from model"
-        
+        questions = response.text if response.text else "No response from model"
+
         return jsonify({
-            "questions": response.text,
+            "questions": questions,
             "count": 5,
             "role": job_title
-            })
+        })
 
     except Exception as e:
         print("ERROR:", e)
+
         return jsonify({
             "error": "Failed to generate questions. Please try again."
         }), 500
+        
+        
 if __name__ == "__main__":
     app.run(debug=True)
