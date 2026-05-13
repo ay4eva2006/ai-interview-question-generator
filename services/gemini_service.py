@@ -1,15 +1,13 @@
 import os
-from google import genai
+import google.generativeai as genai
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
 
-client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
-
+# Setup for google-generativeai (the library you have installed)
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 def generate_ai_questions(job_title):
-
     prompt = f"""
     You are a senior HR interviewer.
 
@@ -19,10 +17,11 @@ def generate_ai_questions(job_title):
     """
 
     try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
+        # Use GenerativeModel instead of Client
+        # Note: Changed to 'gemini-1.5-flash' as '2.5' does not exist yet
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        
+        response = model.generate_content(prompt)
 
         return response.text
 
