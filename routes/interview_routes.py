@@ -18,19 +18,18 @@ def generate():
 
     data = request.get_json()
 
-    job_title = data.get(
-        "job_title",
-        ""
-    ).strip()
+    job_title = data.get("job_title", "").strip()
 
     error = validate_job_title(job_title)
-
     if error:
-        return jsonify({
-            "error": error
-        }), 400
+        return jsonify({"error": error}), 400
 
     questions = generate_ai_questions(job_title)
+
+    if not questions:
+        return jsonify({
+            "error": "Failed to generate questions"
+        }), 500
 
     new_interview = Interview(
         role=job_title,
@@ -41,13 +40,17 @@ def generate():
         searched_role=job_title
     )
 
-    db.session.add(new_interview)
-    db.session.add(analytics)
+    try:
+        db.session.add(new_interview)
+        db.session.add(analytics)
+        db.session.commit()
 
-    db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 
     return jsonify({
         "questions": questions,
-        "count": 5,
+        "count": 3,
         "role": job_title
     })

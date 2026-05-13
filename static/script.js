@@ -31,19 +31,22 @@ async function generateQuestions() {
             `;
             return;
         }
-        
+
+        const raw = data.questions || "";
+
+        const lines = raw
+            .split(/\n|•|-/)
+            .map(q => q.trim())
+            .filter(q => q.length > 0);
+
         result.innerHTML = `
-        <h3>Generated Questions</h3>
-        <ol>
-            ${data.questions
-            .split("\n")
-            .filter(q => q.trim())
-            .map(q => `<li>${q.replace(/^\d+\.\s*/, "")}</li>`)
-            .join("")}
-        </ol>
+            <h3>Generated Questions</h3>
+            <ol>
+                ${lines.map(q =>
+                    `<li>${q.replace(/^\d+\.\s*/, "")}</li>`
+                ).join("")}
+            </ol>
         `;
-      
-        
 
     } catch (error) {
 
@@ -56,3 +59,6 @@ async function generateQuestions() {
         `;
     }
 }
+
+console.log("RESPONSE:", response);
+console.log("DATA:", data);

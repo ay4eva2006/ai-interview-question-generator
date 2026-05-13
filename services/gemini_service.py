@@ -1,11 +1,11 @@
 import os
-import time
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
 
 def generate_ai_questions(job_title):
@@ -14,24 +14,18 @@ def generate_ai_questions(job_title):
     You are a senior HR interviewer.
 
     Generate exactly 3 interview questions for a {job_title} role.
-
-    Requirements:
-    - 2 technical questions
-    - 1 behavioral question
-    - concise
-    - numbered list only
+    2 technical and 1 behavioral.
+    Number them.
     """
 
-    for i in range(3):
-        try:
-            model = genai.GenerativeModel("gemini-1.5-flash")
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
 
-            response = model.generate_content(prompt)
+        return response.text
 
-            return response.text
-
-        except Exception as e:
-            print(f"Retrying... attempt {i+1}")
-            time.sleep(2)
-
-    return None
+    except Exception as e:
+        print("GEMINI ERROR:", e)
+        return "Failed to generate questions"
