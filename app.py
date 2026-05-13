@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from dotenv import load_dotenv
-import redis
+
 from config import Config
 from models import db
 from routes.interview_routes import interview_bp
