@@ -1,28 +1,32 @@
 import os
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
+# Load variables from .env
 load_dotenv()
 
-# Setup for google-generativeai (the library you have installed)
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+# Get the API key from environment
+api_key = os.getenv("GEMINI_API_KEY")
+
+# Create the Client (This replaces genai.configure)
+client = genai.Client(api_key=api_key)
 
 def generate_ai_questions(job_title):
     prompt = f"""
     You are a senior HR interviewer.
-
     Generate exactly 3 interview questions for a {job_title} role.
     2 technical and 1 behavioral.
     Number them.
     """
 
     try:
-        # Use GenerativeModel instead of Client
-        # Note: Changed to 'gemini-1.5-flash' as '2.5' does not exist yet
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        
-        response = model.generate_content(prompt)
+        # Use the modern client-based call
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt
+        )
 
+        # Return the text content
         return response.text
 
     except Exception as e:
