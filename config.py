@@ -1,6 +1,5 @@
 import os
 
-
 class Config:
 
     SECRET_KEY = os.getenv("SECRET_KEY")
@@ -9,3 +8,6 @@ class Config:
         "sqlite:///interviews.db"
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
+    
+    
