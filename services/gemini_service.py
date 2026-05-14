@@ -30,5 +30,19 @@ def generate_ai_questions(job_title):
         return response.text
 
     except Exception as e:
-        print("GEMINI ERROR:", e)
-        return "Failed to generate questions"
+
+    error_message = str(e)
+
+    print("GEMINI ERROR:", error_message)
+
+    if "429" in error_message:
+
+        return jsonify({
+
+            "error": "AI service is temporarily busy. Please try again later."
+
+        }), 429
+
+    print(f"Retrying... attempt {i+1}")
+
+    time.sleep(2)
