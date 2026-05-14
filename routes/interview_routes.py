@@ -1,12 +1,12 @@
 from flask import Blueprint, request, jsonify
-from services.gemini_service import generate_ai_questions
+from services.ai_router import generate_questions
 from utils.validators import validate_job_title
 
 from models import db
 from models.interview import Interview
 from models.analytics import Analytics
 from extensions import limiter
-
+import json
 
 interview_bp = Blueprint(
     "interview_bp",
@@ -25,7 +25,7 @@ def generate():
     if error:
         return jsonify({"error": error}), 400
 
-    questions = generate_ai_questions(job_title)
+    questions = generate_questions(job_title)
 
     if not questions:
         return jsonify({
@@ -34,7 +34,7 @@ def generate():
 
     new_interview = Interview(
         role=job_title,
-        questions=questions
+        questions=json.dumps(questions)
     )
 
     analytics = Analytics(
