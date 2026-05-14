@@ -5,6 +5,7 @@ from utils.validators import validate_job_title
 from models import db
 from models.interview import Interview
 from models.analytics import Analytics
+from extensions import limiter
 
 
 interview_bp = Blueprint(
@@ -12,8 +13,8 @@ interview_bp = Blueprint(
     __name__
 )
 
-
 @interview_bp.route("/generate", methods=["POST"])
+@limiter.limit("3 per minute")
 def generate():
 
     data = request.get_json()
@@ -48,9 +49,15 @@ def generate():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
-
+    
     return jsonify({
-        "questions": questions,
-        "count": 3,
-        "role": job_title
-    })
+
+    "success": True,
+
+    "questions": questions,
+
+    "count": 3,
+
+    "role": job_title
+
+}), 200
