@@ -1,5 +1,6 @@
 venv/
 .env
+.git
 *.pyc
 __pycache__/
 README.md~

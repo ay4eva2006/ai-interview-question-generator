@@ -4,38 +4,34 @@ from dotenv import load_dotenv
 from config import Config
 from models import db
 from routes.interview_routes import interview_bp
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 from extensions import limiter
 
-
-# Load environment variables
+# 1. Load environment variables
 load_dotenv()
 
-# Create Flask app
+# 2. Create Flask app
 app = Flask(__name__)
-limiter.init_app(app)
 
-# Load config
+# 3. Load config first (This sets up the DB and Redis URLs)
 app.config.from_object(Config)
 
-# Initialize database
+# 4. Initialize extensions
 db.init_app(app)
+limiter.init_app(app)
 
-# Register blueprints
+# 5. Register blueprints
 app.register_blueprint(interview_bp)
 
-
-# Home route
+# 6. Routes
 @app.route("/")
 def home():
     return render_template("index.html")
 
-
-# Create database tables
+# 7. Create database tables
 with app.app_context():
     db.create_all()
 
-# Run app
+# 8. Run app (Render/Docker will use Gunicorn, but this is for local)
 if __name__ == "__main__":
-    app.run()
+    # Host 0.0.0.0 is required for Docker
+    app.run(host="0.0.0.0", port=10000)

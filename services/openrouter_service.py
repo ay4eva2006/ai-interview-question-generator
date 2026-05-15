@@ -19,7 +19,7 @@ def generate_openrouter_questions(job_title):
 
         response = client.chat.completions.create(
 
-            model="google/gemma-2-9b-it:free",
+            model="openrouter/auto-learn-free",
 
             messages=[
                 {
@@ -32,7 +32,7 @@ def generate_openrouter_questions(job_title):
             extra_headers={
                 "HTTP-Referer": "http://localhost:5000",
                 "X-Title": "AI Interview Generator"
-            }
+                }
 
         )
 

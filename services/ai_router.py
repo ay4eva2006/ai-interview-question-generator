@@ -2,9 +2,8 @@ from services.gemini_service import generate_ai_questions
 
 from services.groq_service import generate_groq_questions
 
-from services.openrouter_service import (
-    generate_openrouter_questions
-)
+from services.openrouter_service import generate_openrouter_questions
+
 
 
 def generate_questions(job_title):
@@ -19,12 +18,12 @@ def generate_questions(job_title):
         return questions
 
     # TRY GROQ
-    questions = generate_groq_questions(job_title)
-
+    questions = generate_groq_questions(job_title) 
+    
     if questions:
-
-        print("Using Groq")
-
+        
+        print("print groq")
+        
         return questions
 
     # TRY OPENROUTER
