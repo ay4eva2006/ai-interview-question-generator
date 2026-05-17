@@ -51,7 +51,7 @@ def generate_questions(job_title):
 # SAFE FALLBACK
 def fallback_questions(job_title):
     return f"""
-1. Tell me about your experience as a {job_title}.
-2. What is the most challenging problem you solved?
-3. How do you approach learning new technologies?
+Tell me about your experience as a {job_title}.
+What is the most challenging problem you solved?
+How do you approach learning new technologies?
 """

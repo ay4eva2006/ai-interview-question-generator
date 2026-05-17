@@ -24,7 +24,7 @@ def generate_groq_questions(job_title):
     Requirements:
     - 2 Technical questions (hard skills/scenarios).
     - 1 Behavioral question (soft skills/past experience).
-    - Return ONLY a numbered list."""
+    """
 
     try:
         response = client.chat.completions.create(
