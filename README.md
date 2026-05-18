@@ -1,78 +1,79 @@
-📌 AI Interview Question Generator
+🤖 Professional AI Interview Architect (Multi-Provider)
+![alt text](https://img.shields.io/badge/Deployment-Render-brightgreen.svg)
 
-An AI-powered web application that generates interview questions for any job role using Google Gemini AI. Built with Flask, JavaScript, HTML, and CSS.
+![alt text](https://img.shields.io/badge/Docker-Ready-blue.svg)
 
-🚀 Features
-Generate interview questions for any job title
-Mix of technical and behavioral questions
-AI-powered responses using Google Gemini
-Clean and simple UI
-Real-time results without page reload
-🛠️ Tech Stack
-Backend: Flask (Python)
-Frontend: HTML, CSS, JavaScript
-AI Model: Google Gemini API
-Environment Management: Python-dotenv
-📷 Preview
-Input: Software Engineer  
-Output:  
-1. Explain OOP principles  
-2. What is REST API?  
-3. Describe a challenging project...  
-⚙️ Installation & Setup
-1. Clone the repository
+![alt text](https://img.shields.io/badge/Database-PostgreSQL-336791.svg)
+An advanced, scalable AI-driven interview question generator. This system features a robust AI Router that intelligently manages requests across Google Gemini, Groq, and OpenRouter, ensuring high availability and cost-optimization.
+🔗 Live Demo on Render
+🌟 Key Features
+Multi-LLM Routing: Intelligent failover and selection between Groq (LPU speed), Gemini (Contextual depth), and OpenRouter.
+Topic Narrowing Engine: Custom prompt engineering to strictly enforce professional job-title validation.
+Performance Caching: Integrated Redis layer to cache frequent job-role requests and reduce API latency.
+Persistent Storage: PostgreSQL backend for storing generated question sets, role histories, and user sessions.
+Full Containerization: Ready for production deployment via Docker and Docker Compose.
+Automated Testing: Comprehensive test suite for ensuring AI response integrity and API stability.
+🛠️ Advanced Tech Stack
+Backend: Flask (Python), Flask-SQLAlchemy, Flask-Migrate
+AI Integration: Google Gemini SDK, Groq SDK, OpenRouter API
+Validation: Marshmallow (Schema) / Pydantic
+Database & Cache: PostgreSQL, Redis
+DevOps: Docker, Docker Compose, Gunicorn
+Security: Python-Dotenv, Environment Variable Guarding
+📂 System Architecture & Folder Structure
+code
+Text
+ai-interview-question-generator/
+├── app.py                # Application Entry Point
+├── config.py             # Global Configurations (Dev/Prod/Test)
+├── extensions.py         # Initialization of DB, Redis, and Plugins
+├── models/               # SQLAlchemy Database Models
+├── schema/               # Data Validation & Serialization (Marshmallow)
+├── services/             # Core Logic (AI Router, Prompt Builder)
+├── utils/                # Helper Functions (Regex, Logging)
+├── tests/                # Unit & Integration Testing
+├── static/ & templates/  # Vanilla JS Frontend & Jinja2 Templates
+├── Dockerfile            # Container definition
+├── docker-compose.yml    # Orchestration for Flask, Redis, & Postgres
+└── requirements.txt      # Project Dependencies
+🚀 Installation & Local Development
+Using Docker (Recommended)
+code
+Bash
+docker-compose up --build
+Manual Setup
+Clone & Virtual Env:
+code
+Bash
 git clone https://github.com/ay4eva2006/ai-interview-question-generator.git
 cd ai-interview-question-generator
-2. Create virtual environment
-python -m venv venv
-venv\Scripts\activate   # Windows
-3. Install dependencies
-pip install -r requirements.txt
-
-If you don’t have requirements.txt, create it:
-
-pip freeze > requirements.txt
-4. Add environment variables
-
-Create a .env file:
-
-GEMINI_API_KEY=your_api_key_here
-5. Run the app
-python app.py
-
-Open:
-
-http://127.0.0.1:5000
-🔑 API Setup
-
-This project uses Google Gemini API.
-
-Get your API key here:
-Google AI Studio
-
-📁 Project Structure
-ai-interview-question-generator/
-│
-├── app.py
-├── static/
-│   ├── script.js
-│   └── style.css
-├── templates/
-│   └── index.html
-├── .env
-├── .gitignore
-└── README.md
-⚠️ Important Notes
-Never upload .env or API keys to GitHub
-Make sure venv/ is ignored
-Use environment variables for security
-📈 Future Improvements
-Add login system
-Save generated questions
-Export questions as PDF
-Improve AI prompt tuning
-Deploy online (Render / Vercel)
+python -m venv venv && source venv/bin/activate
+Environment Variables:
+Create a .env file and populate:
+code
+Env
+DATABASE_URL=postgresql://user:pass@localhost:5432/db
+REDIS_URL=redis://localhost:6379/0
+GEMINI_API_KEY=your_key
+GROQ_API_KEY=your_key
+OPENROUTER_API_KEY=your_key
+Database Migrations:
+code
+Bash
+flask db upgrade
+Run Tests:
+code
+Bash
+pytest
+🧠 The "Narrowing" Logic (Prompt Engineering)
+The application implements a strict Topic Filter at the service layer. Every user input is passed through a "Professional Reality Check" logic that:
+Validates input against standardized O*NET/LinkedIn career taxonomies.
+Rejects frivolous or non-professional inputs with a standardized [WRONG JOB DESCRIPTION] signal.
+Automatically formats the AI output into a clean, unnumbered 3-paragraph structure to prevent UI breakage.
 👨‍💻 Author
-
 Ayo John Adekunle
-GitHub: https://github.com/ay4eva2006
+Built with passion for AI, Scalability, and Clean Code.
+GitHub: @ay4eva2006
+Portfolio: ay4eva2006.me <!-- Replace with your actual portfolio if you have one -->
+📄 License
+This project is licensed under the MIT License.
