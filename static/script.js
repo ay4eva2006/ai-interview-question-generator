@@ -1,64 +1,49 @@
 async function generateQuestions() {
+    const jobTitle = document.getElementById('jobTitle').value;
+    const resultDiv = document.getElementById('result');
+    const loading = document.getElementById('loading');
 
-    const jobTitle = document.getElementById("jobTitle").value;
-    const loading = document.getElementById("loading");
-    const result = document.getElementById("result");
+    if (!jobTitle) return;
 
-    loading.style.display = "block";
-    result.innerHTML = "";
+    loading.style.display = 'block';
+    resultDiv.innerHTML = '';
 
     try {
-
-        const response = await fetch("/generate", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                job_title: jobTitle
-            })
+        const response = await fetch('/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ job_title: jobTitle }),
         });
 
         const data = await response.json();
+        const aiText = data.questions.trim();
 
-        loading.style.display = "none";
-
-        if (data.error) {
-            result.innerHTML = `
-                <p style="color:red;">
-                    Error: ${data.error}
-                </p>
-            `;
+        // 1. CHECK FOR THE NARROWING GUARDRAIL
+        if (aiText.includes("[INVALID]") || aiText.length < 5) {
+            resultDiv.innerHTML = `
+                <div class="error-box">
+                    <strong>Invalid Job Title:</strong> 
+                    "${jobTitle}" is not a recognized professional career. Please enter a real job title.
+                </div>`;
             return;
         }
 
-        const raw = data.questions || "";
+        // 2. THE BROKEN LINE FIX: Split ONLY by double newlines
+        // This prevents sentences from breaking into separate boxes
+        const questions = aiText.split(/\n\s*\n/);
 
-        const lines = raw
-            .split(/\n|•|-/)
-            .map(q => q.trim())
-            .filter(q => q.length > 0);
-
-        result.innerHTML = `
-            <h3>Generated Questions</h3>
-            <ol>
-                ${lines.map(q =>
-                    `<li>${q.replace(/^\d+\.\s*/, "")}</li>`
-                ).join("")}
-            </ol>
-        `;
+        resultDiv.innerHTML = questions
+            .slice(0, 3) 
+            .map(q => {
+                // Remove numbers (1., 2., etc.) if the AI accidentally adds them
+                const cleanQuestion = q.replace(/^\d+[\.\)]\s*/, '').trim();
+                return `<div class="question-block">${cleanQuestion}</div>`;
+            })
+            .join('');
 
     } catch (error) {
-
-        loading.style.display = "none";
-
-        result.innerHTML = `
-            <p style="color:red;">
-                Something went wrong.
-            </p>
-        `;
+        resultDiv.innerHTML = '<p class="error">System error connecting to AI.</p>';
+    } finally {
+        loading.style.display = 'none';
     }
 }
-
-console.log("RESPONSE:", response);
-console.log("DATA:", data);

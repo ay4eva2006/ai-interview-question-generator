@@ -1,44 +1,83 @@
 import os
+
 from openai import OpenAI
 
+from services.prompt_builder import build_interview_prompt
+
+
 def get_groq_client():
-    # Ensure this is your GROQ key (starts with gsk_)
+
     api_key = os.environ.get("GROQ_API_KEY")
+
     if not api_key:
+        print("GROQ API KEY NOT FOUND")
         return None
+
     return OpenAI(
         base_url="https://api.groq.com/openai/v1",
         api_key=api_key
     )
 
+
+GROQ_MODELS = [
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant"
+]
+
+
 def generate_groq_questions(job_title):
+
     client = get_groq_client()
+
     if not client:
-        print("GROQ ERROR: No API Key found")
         return None
 
-    # We move the rules to the system role for better "Strict" adherence
-    system_prompt = "You are an expert recruiter. You provide exactly 3 interview questions without any introductory or concluding text like. You do not use labels like 'Technical' or 'Behavioral'."
-    
-    user_prompt = f"""Generate exactly 3 professional interview questions for a {job_title} role. 
-    Requirements:
-    - 2 Technical questions (hard skills/scenarios).
-    - 1 Behavioral question (soft skills/past experience).
-    """
+    prompt = build_interview_prompt(job_title)
 
-    try:
-        response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ],
-            temperature=0.7, # Adds a bit of variety to questions
-            max_tokens=500
-        )
+    for model in GROQ_MODELS:
 
-        return response.choices[0].message.content
+        try:
 
-    except Exception as e:
-        print("GROQ ERROR:", e)
-        return None
+            print(f"[GROQ] Trying model: {model}")
+
+            response = client.chat.completions.create(
+
+                model=model,
+
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are an expert technical interviewer. "
+                            "Generate clear and professional interview questions."
+                        )
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+
+                temperature=0.7,
+                max_tokens=500
+            )
+
+            content = response.choices[0].message.content
+
+            if not content:
+                print(f"[GROQ] Empty response from {model}")
+                continue
+
+            print(f"[GROQ] Success using {model}")
+
+            return content.strip()
+
+        except Exception as e:
+
+            print(f"[GROQ ERROR - {model}]:", e)
+
+            continue
+
+    print("[GROQ] All models failed")
+
+    return None

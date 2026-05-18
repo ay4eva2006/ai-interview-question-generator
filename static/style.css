@@ -27,3 +27,21 @@ button {
 #result {
     margin-top: 20px;
 }
+
+.question-block {
+    background: #ffffff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border-left: 5px solid #007bff; /* Adds a nice blue line on the side */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    line-height: 1.6;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.error {
+    color: #dc3545;
+    font-weight: bold;
+    text-align: center;
+}
